@@ -1,11 +1,13 @@
+import subprocess
 import time
 import os
 import ntpath
+import autoslice
 
 class Watcher:
-    DIRECTORY_TO_WATCH = "./inputFiles"
-    DIRECTORY_TEMP = "./tempFiles"
-    DIRECTORY_OUT = "./outputFiles"
+    DIRECTORY_TO_WATCH = ".\\inputFiles"
+    DIRECTORY_OUT = ".\\outputFiles"
+    autoslicer = autoslice.AutoSlicer()
 
     def __init__(self):
         print("Watching", self.DIRECTORY_TO_WATCH)
@@ -28,8 +30,8 @@ class Watcher:
             except:
                 print("Invalid file found: ", file)
 
-        print("Current folder content:")
-        print(validFiles)
+        #print("Current folder content:")
+        #print(validFiles)
         return validFiles
 
     def run(self):
@@ -38,13 +40,20 @@ class Watcher:
                 # Get list of STL files in input folder
                 validFiles = self.__getValidFiles()
                 for file in validFiles:
+                    inputFile = self.DIRECTORY_TO_WATCH + "\\" + file
+
                     try:
-                        os.popen('move ' + self.DIRECTORY_TO_WATCH + "\\" + file + " " + self.DIRECTORY_TEMP + "\\" + file)
+                        self.autoslicer.slice(inputFile, self.DIRECTORY_OUT, file)
                     except:
-                        print("Couldn't move file " + file)
+                        print("Couldn't slice file " + file)
+
+                    try:
+                        os.remove(inputFile)
+                    except:
+                        print("Couldn't delete file " + file)
 
                 # Delay between checks
-                time.sleep(5)
+                time.sleep(2)
         except:
             print ("Error")
 
