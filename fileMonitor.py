@@ -1,4 +1,4 @@
-import subprocess, time, os, ntpath
+import time, os
 import autoslice
 
 class Watcher:

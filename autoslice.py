@@ -2,7 +2,6 @@ import subprocess
 import tempfile
 
 import numpy as np
-from octorest import OctoRest
 from stl import Mesh
 
 

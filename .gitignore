@@ -1,7 +1,5 @@
 inputFiles/
 outputFiles/
-Lib/
-Scripts/
+venv/
 __pycache__/
-pyvenv.cfg
 test.py
