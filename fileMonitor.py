@@ -1,7 +1,4 @@
-import subprocess
-import time
-import os
-import ntpath
+import subprocess, time, os, ntpath
 import autoslice
 
 class Watcher:
@@ -22,16 +19,12 @@ class Watcher:
             try:
                 # Separate file name and extension
                 [name, extension] = file.split(".", 2)
-                #print("File name:", name)
-                #print("File extension:", extension)
                 if extension.lower() == "stl":
                     #print("Valid STL file found")
                     validFiles.append(file)
             except:
                 print("Invalid file found: ", file)
 
-        #print("Current folder content:")
-        #print(validFiles)
         return validFiles
 
     def run(self):

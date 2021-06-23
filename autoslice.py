@@ -14,6 +14,10 @@ class AutoSlicer:
 
     inputFile = ""
 
+    # Select slicer parameters based on unprintability > treshold
+    treshold_supports = 1.0
+    treshold_brim = 2.0
+
     def __tweakFile(self, inputFile, dir):
         try:
             outputFile = dir + "\\tweaked.stl"
@@ -22,6 +26,7 @@ class AutoSlicer:
             _, temp = result.splitlines()[-5].split(":")
             unprintability = str(round(float(temp.strip()), 2))
             print("Unprintability: " + unprintability)
+            print(result)
             print(outputFile)
             return outputFile, unprintability
         except:
@@ -44,11 +49,20 @@ class AutoSlicer:
 
 
     def __runSlicer(self, inputFile, dir, initialName, unprintability):
-        [filename, extension] = initialName.split(".")
-        outputFile = dir + "\\" + filename + "U" + unprintability + ".gcode"
+        filename, _ = initialName.split(".")
+        outputFile = dir + "\\" + filename + "U" + str(unprintability) + ".gcode"
+
+        cmd = [self.slicerPath, "--load", self.configPath]
+
+        if float(unprintability) > self.treshold_brim:
+            cmd.extend(["--brim-width", "5", "--skirt-distance", "6"])
+        if float(unprintability) > self.treshold_supports:
+            cmd.append("--support-material")
+
+        cmd.extend(["-g", "-o", outputFile, inputFile])
+        print(cmd)
         try:
-            subprocess.run([self.slicerPath, "--load", self.configPath
-                            , "-g", "-o", outputFile, inputFile])
+            subprocess.run(cmd)
         except:
             print("Couldn't slice file " + self.inputFile)
 
