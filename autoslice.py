@@ -23,12 +23,44 @@ class AutoSlicer:
             outputFile = dir + "\\tweaked.stl"
             result = subprocess.run(["python", self.tweakerPath + "\\Tweaker.py", "-i", inputFile, "-o", outputFile, "-x", "-vb"]
                                     , capture_output=True, text=True).stdout
-            _, temp = result.splitlines()[-5].split(":")
-            unprintability = str(round(float(temp.strip()), 2))
-            print("Unprintability: " + unprintability)
+            resultLines = result.splitlines()
+            _, temp = resultLines[-5].split(":")
+            _, matchRotTemp = resultLines[-11].split(":")
+            matchRot = matchRotTemp.strip()
+            print(matchRot)
+            #print(resultLines)
+            rotLines = []
+            foundLine = ""
+            # iterate over all lines after #3 (Alignment: Bottom: Overhang: Contour: Unpr.:)
+            for i, line in enumerate(resultLines[4:]):
+                if "[" in line:
+                    if(matchRot in line):
+                       foundLine = line
+                       break
+                else:
+                    # break on first line after block
+                    break
+            print("Found: ", end="")
+            print(foundLine)
+
+            _, foundLine = foundLine.split("]")
+            while "  " in foundLine:
+                foundLine = foundLine.replace("  ", " ")
+            _, bottom, overhang, contour, unprintability = foundLine.split(" ", 4)
+            unprintability = unprintability.strip()
+            print("Bottom : ", bottom)
+            print("Overhang: ", overhang)
+            print("Contour: ", contour)
+            print("Unprintability: ", unprintability)
+
+            # send values to slicing support strategy
+            tweakerData = [bottom, overhang, contour, unprintability]
+
+            #unprintability = "_U" + str(round(float(temp.strip()), 2))
+            #print("Unprintability: " + unprintability)
             print(result)
             print(outputFile)
-            return outputFile, unprintability
+            return outputFile, tweakerData
         except:
             print("Couldn't run tweaker on file " + self.inputFile)
 
@@ -48,16 +80,18 @@ class AutoSlicer:
             print("Couldn't adjust height of file " + self.inputFile)
 
 
-    def __runSlicer(self, inputFile, dir, initialName, unprintability):
+    def __runSlicer(self, inputFile, dir, initialName, tweakerData):
         filename, _ = initialName.split(".")
-        outputFile = dir + "\\" + filename + "_U" + str(unprintability) + "_{print_time}" ".gcode"
+        bottom, overhang, contour, unprintability = tweakerData
+        tweakerString = "_B" + bottom + "_O" + overhang + "_C" + contour + "_U" + unprintability 
+        outputFile = dir + "\\" + filename + tweakerString + "_{print_time}" ".gcode"
 
         cmd = [self.slicerPath, "--load", self.configPath]
 
-        if float(unprintability) > self.treshold_brim:
-            cmd.extend(["--brim-width", "5", "--skirt-distance", "6"])
-        if float(unprintability) > self.treshold_supports:
-            cmd.append("--support-material")
+        # if float(unprintability) > self.treshold_brim:
+        #     cmd.extend(["--brim-width", "5", "--skirt-distance", "6"])
+        # if float(unprintability) > self.treshold_supports:
+        #     cmd.append("--support-material")
 
         cmd.extend(["-g", "-o", outputFile, inputFile])
         print(cmd)
@@ -71,6 +105,6 @@ class AutoSlicer:
         self.inputFile = input
         with tempfile.TemporaryDirectory() as tempDirectory:
             print(tempDirectory)
-            tweakedFile, unprintability = self.__tweakFile(self.inputFile, tempDirectory)
+            tweakedFile, tweakerData = self.__tweakFile(self.inputFile, tempDirectory)
             translatedFile = self.__adjustHeight(tweakedFile, tempDirectory)
-            self.__runSlicer(translatedFile, outputPath, initialName, unprintability)
+            self.__runSlicer(translatedFile, outputPath, initialName, tweakerData)
