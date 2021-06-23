@@ -18,6 +18,7 @@ class AutoSlicer:
     treshold_supports = 1.0
     treshold_brim = 2.0
 
+
     def __tweakFile(self, inputFile, dir):
         try:
             outputFile = dir + "\\tweaked.stl"
@@ -50,7 +51,7 @@ class AutoSlicer:
 
     def __runSlicer(self, inputFile, dir, initialName, unprintability):
         filename, _ = initialName.split(".")
-        outputFile = dir + "\\" + filename + "U" + str(unprintability) + ".gcode"
+        outputFile = dir + "\\" + filename + "_U" + str(unprintability) + "_{print_time}" ".gcode"
 
         cmd = [self.slicerPath, "--load", self.configPath]
 
@@ -65,6 +66,7 @@ class AutoSlicer:
             subprocess.run(cmd)
         except:
             print("Couldn't slice file " + self.inputFile)
+
 
     def slice(self, input, outputPath, initialName):
         self.inputFile = input
