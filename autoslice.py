@@ -109,4 +109,4 @@ class AutoSlicer:
             translatedFile = self.__adjustHeight(tweakedFile, tempDirectory)
             self.__runSlicer(translatedFile, outputPath, initialName, tweakerData)
             with open("outputFiles/support_study_data.csv", "a") as f:
-                f.write(initialName + "," + tweakerData[0] + "," + tweakerData[1] + "," + tweakerData[2] + "," + tweakerData[3] + ",")
+                f.write(initialName + "," + tweakerData[0] + "," + tweakerData[1] + "," + tweakerData[2] + "," + tweakerData[3] + "\n")
