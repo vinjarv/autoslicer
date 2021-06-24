@@ -1,5 +1,6 @@
 inputFiles/
 outputFiles/
 venv/
+.vscode/
 __pycache__/
 test.py
