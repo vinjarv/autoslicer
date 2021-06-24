@@ -4,7 +4,6 @@ import tempfile
 import numpy as np
 from stl import Mesh
 
-
 class AutoSlicer:
     # Program/config locations
     slicerPath = "C:\\Program Files\\Prusa3D\\PrusaSlicer\\prusa-slicer-console.exe"
@@ -74,3 +73,7 @@ class AutoSlicer:
             tweakedFile, unprintability = self.__tweakFile(self.inputFile, tempDirectory)
             translatedFile = self.__adjustHeight(tweakedFile, tempDirectory)
             self.__runSlicer(translatedFile, outputPath, initialName, unprintability)
+
+
+    def testConfPrint(self, config):
+        print(config["PATHS"]["slicer"])
