@@ -5,12 +5,8 @@ import numpy as np
 from stl import Mesh
 
 class AutoSlicer:
-    # Program/config locations
-    slicerPath = "C:\\Program Files\\Prusa3D\\PrusaSlicer\\prusa-slicer-console.exe"
-    configPath = "C:\\Users\\vinja\\Downloads\\MK3Sconf.ini"
-    tweakerPath = "C:\\Users\\vinja\\OneDrive\\Documents\\VSCode\\Python\\Tweaker 3\\Tweaker-3"
-
-    inputFile = ""
+    config = "" # will get from fileMonitor.py
+    inputFile = "" 
 
     # Select slicer parameters based on unprintability > treshold
     treshold_supports = 1.0
@@ -20,7 +16,7 @@ class AutoSlicer:
     def __tweakFile(self, inputFile, dir):
         try:
             outputFile = dir + "\\tweaked.stl"
-            result = subprocess.run(["python", self.tweakerPath + "\\Tweaker.py", "-i", inputFile, "-o", outputFile, "-x", "-vb"]
+            result = subprocess.run(["python", self.config["PATHS"]["tweaker"] + "\\Tweaker.py", "-i", inputFile, "-o", outputFile, "-x", "-vb"]
                                     , capture_output=True, text=True).stdout
             _, temp = result.splitlines()[-5].split(":")
             unprintability = str(round(float(temp.strip()), 2))
@@ -47,11 +43,11 @@ class AutoSlicer:
             print("Couldn't adjust height of file " + self.inputFile)
 
 
-    def __runSlicer(self, inputFile, dir, initialName, unprintability):
+    def __runSlicer(self, inputFile, initialName, unprintability):
         filename, _ = initialName.split(".")
-        outputFile = dir + "\\" + filename + "_U" + str(unprintability) + "_{print_time}" ".gcode"
+        outputFile = self.config["PATHS"]["outputDirectory"] + "\\" + filename + "_U" + str(unprintability) + "_{print_time}" ".gcode"
 
-        cmd = [self.slicerPath, "--load", self.configPath]
+        cmd = [self.config["PATHS"]["slicer"], "--load", self.config["PATHS"]["slicerConfig"]]
 
         if float(unprintability) > self.treshold_brim:
             cmd.extend(["--brim-width", "5", "--skirt-distance", "6"])
@@ -66,14 +62,11 @@ class AutoSlicer:
             print("Couldn't slice file " + self.inputFile)
 
 
-    def slice(self, input, outputPath, initialName):
+    def slice(self, input, configParsed, initialName):
         self.inputFile = input
+        self.config = configParsed
         with tempfile.TemporaryDirectory() as tempDirectory:
             print(tempDirectory)
             tweakedFile, unprintability = self.__tweakFile(self.inputFile, tempDirectory)
             translatedFile = self.__adjustHeight(tweakedFile, tempDirectory)
-            self.__runSlicer(translatedFile, outputPath, initialName, unprintability)
-
-
-    def testConfPrint(self, config):
-        print(config["PATHS"]["slicer"])
+            self.__runSlicer(translatedFile, initialName, unprintability)

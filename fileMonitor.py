@@ -6,7 +6,6 @@ config.read("./Config/config.ini")
 
 class Watcher:
     DIRECTORY_TO_WATCH = config["PATHS"]["inputDirectory"]
-    DIRECTORY_OUT = config["PATHS"]["outputDirectory"]
     autoslicer = autoslice.AutoSlicer()
 
     def __init__(self):
@@ -36,15 +35,16 @@ class Watcher:
                 # Get list of STL files in input folder
                 validFiles = self.__getValidFiles()
                 for file in validFiles:
-                    inputFile = self.DIRECTORY_TO_WATCH + "\\" + file
+                    inputFilePath = self.DIRECTORY_TO_WATCH + "\\" + file
 
                     try:
-                        self.autoslicer.slice(inputFile, self.DIRECTORY_OUT, file)
+                        self.autoslicer.slice(inputFilePath, config, file)
                     except:
                         print("Couldn't slice file " + file)
 
                     try:
-                        os.remove(inputFile)
+                        # Clean folder to avoid endless loops on file
+                        os.remove(inputFilePath)
                     except:
                         print("Couldn't delete file " + file)
 
