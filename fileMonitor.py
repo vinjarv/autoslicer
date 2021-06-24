@@ -1,9 +1,12 @@
-import time, os
+import time, os, configparser
 import autoslice
 
+config = configparser.ConfigParser()
+config.read("./Config/config.ini")
+
 class Watcher:
-    DIRECTORY_TO_WATCH = ".\\inputFiles"
-    DIRECTORY_OUT = ".\\outputFiles"
+    DIRECTORY_TO_WATCH = config["PATHS"]["inputDirectory"]
+    DIRECTORY_OUT = config["PATHS"]["outputDirectory"]
     autoslicer = autoslice.AutoSlicer()
 
     def __init__(self):
