@@ -20,7 +20,7 @@ class Watcher:
         for file in allFiles:
             try:
                 # Separate file name and extension
-                [name, extension] = file.split(".", 2)
+                [name, extension] = file.rsplit(".", 1)
                 if extension.lower() == "stl":
                     #print("Valid STL file found")
                     validFiles.append(file)
