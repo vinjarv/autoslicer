@@ -17,6 +17,8 @@ class Watcher:
         validFiles = []
 
         # Check all files for type, store all STL files in validFiles
+        # TODO: Handle æøå, spaces - they don't work after uploading to octoprint
+        # Force ASCII?
         for file in allFiles:
             try:
                 # Separate file name and extension
