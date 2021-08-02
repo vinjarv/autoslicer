@@ -45,6 +45,7 @@ class AutoSlicer:
 
     def __runSlicer(self, inputFile, initialName, unprintability):
         filename, _ = initialName.split(".")
+        filename = filename.replace(" ", "_") # Remove spaces
         outputFile = self.config["PATHS"]["outputDirectory"] + "\\" + filename + "_U" + str(unprintability) + "_{print_time}" ".gcode"
 
         cmd = [self.config["PATHS"]["slicer"], "--load", self.config["PATHS"]["slicerConfig"]]
