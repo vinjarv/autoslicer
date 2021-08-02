@@ -19,7 +19,7 @@ class Watcher:
             try:
                 # Separate file name and extension
                 [name, extension] = file.split(".", 2)
-                if extension.lower() == "stl":
+                if extension.lower() == "stl" or extension.lower() == "3mf":
                     #print("Valid STL file found")
                     validFiles.append(file)
             except:
@@ -30,9 +30,10 @@ class Watcher:
     def run(self):
         try:
             while True:
-                # Get list of STL files in input folder
+                # Get list of STL/3MF files in input folder
                 validFiles = self.__getValidFiles()
                 for file in validFiles:
+                    # TODO: Use os.path.join("1", "2") instead of hard coding "\\"
                     inputFile = self.DIRECTORY_TO_WATCH + "\\" + file
 
                     try:
