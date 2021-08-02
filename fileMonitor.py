@@ -23,7 +23,7 @@ class Watcher:
             try:
                 # Separate file name and extension
                 [name, extension] = file.rsplit(".", 1)
-                if extension.lower() == "stl":
+                if extension.lower() == "stl" or extension.lower() == "3mf":
                     #print("Valid STL file found")
                     validFiles.append(file)
             except:
@@ -34,7 +34,7 @@ class Watcher:
     def run(self):
         try:
             while True:
-                # Get list of STL files in input folder
+                # Get list of STL/3MF files in input folder
                 validFiles = self.__getValidFiles()
                 for file in validFiles:
                     inputFilePath = self.DIRECTORY_TO_WATCH + "\\" + file
