@@ -1,5 +1,11 @@
-import time, os, configparser
+import time
+import os
+import configparser
 import autoslice
+
+# Set working directory to allow running autoslicer from another process
+print("Autoslicer location:", os.path.dirname(__file__))
+os.chdir(os.path.dirname(__file__))
 
 config = configparser.ConfigParser()
 config.read("./Config/config.ini")
