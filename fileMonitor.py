@@ -4,8 +4,11 @@ import configparser
 import autoslice
 
 # Set working directory to allow running autoslicer from another process
-print("Autoslicer location:", os.path.dirname(__file__))
-os.chdir(os.path.dirname(__file__))
+
+autoslicer_location = os.path.dirname(__file__)
+print("Autoslicer location:", autoslicer_location)
+if autoslicer_location != "":
+    os.chdir(autoslicer_location)
 
 config = configparser.ConfigParser()
 config.read("./Config/config.ini")
@@ -43,7 +46,7 @@ class Watcher:
                 # Get list of STL/3MF files in input folder
                 validFiles = self.__getValidFiles()
                 for file in validFiles:
-                    inputFilePath = self.DIRECTORY_TO_WATCH + "\\" + file
+                    inputFilePath = os.path.join(self.DIRECTORY_TO_WATCH, file)
 
                     try:
                         self.autoslicer.slice(inputFilePath, config, file)
