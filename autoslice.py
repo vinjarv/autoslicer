@@ -18,7 +18,16 @@ class AutoSlicer:
         try:
             outputFile = os.path.join(dir, "tweaked.stl")
             print(outputFile)
-            result = subprocess.run(["python", os.path.join(self.config["PATHS"]["tweaker"], "Tweaker.py"), "-i", input_file, "-o", outputFile, "-x", "-vb"]
+            if os.name == "nt":
+                python_path = os.path.join(os.getcwd(), "venv", "Scripts", "python")
+            else:
+                python_path = os.path.join(os.getcwd(), "venv", "bin", "python")
+            tweaker_path = os.path.join(
+                os.getcwd(),
+                self.config["PATHS"]["tweaker"], 
+                "Tweaker.py"
+            )
+            result = subprocess.run([python_path, tweaker_path, "-i", input_file, "-o", outputFile, "-x", "-vb"]
                                     , capture_output=True, text=True).stdout
             _, temp = result.splitlines()[-5].split(":")
             unprintability = str(round(float(temp.strip()), 2))
