@@ -6,9 +6,6 @@ import os
 from stl import Mesh
 
 class AutoSlicer:
-    config = "" # will get from fileMonitor.py
-    inputFile = "" 
-
     # Select slicer parameters based on unprintability > treshold
     treshold_supports = 1.0
     treshold_brim = 2.0
@@ -16,8 +13,8 @@ class AutoSlicer:
 
     def __tweakFile(self, input_file, dir):
         try:
-            outputFile = os.path.join(dir, "tweaked.stl")
-            print(outputFile)
+            output_file = os.path.join(dir, "tweaked.stl")
+            print(output_file)
             if os.name == "nt":
                 python_path = os.path.join(os.getcwd(), "venv", "Scripts", "python")
             else:
@@ -27,14 +24,14 @@ class AutoSlicer:
                 self.config["PATHS"]["tweaker"], 
                 "Tweaker.py"
             )
-            result = subprocess.run([python_path, tweaker_path, "-i", input_file, "-o", outputFile, "-x", "-vb"]
+            result = subprocess.run([python_path, tweaker_path, "-i", input_file, "-o", output_file, "-x", "-vb"]
                                     , capture_output=True, text=True).stdout
             _, temp = result.splitlines()[-5].split(":")
             unprintability = str(round(float(temp.strip()), 2))
             print("Unprintability: " + unprintability)
             print(result)
-            print(outputFile)
-            return outputFile, unprintability
+            print(output_file)
+            return output_file, unprintability
         except:
             print("Couldn't run tweaker on file " + self.input_file)
 
@@ -98,6 +95,6 @@ class AutoSlicer:
         self.config = config_parsed
         with tempfile.TemporaryDirectory() as temp_directory:
             print(temp_directory)
-            tweakedFile, unprintability = self.__tweakFile(self.input_file, temp_directory)
-            translatedFile = self.__adjustHeight(tweakedFile, temp_directory)
+            tweaked_file, unprintability = self.__tweakFile(self.input_file, temp_directory)
+            translatedFile = self.__adjustHeight(tweaked_file, temp_directory)
             self.__runSlicer(translatedFile, initial_name, unprintability)
