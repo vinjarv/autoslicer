@@ -1,6 +1,7 @@
 inputFiles/
 outputFiles/
 venv/
+Config/config.ini
 .vscode/
 __pycache__/
 test.py
