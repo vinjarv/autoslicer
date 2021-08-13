@@ -1,15 +1,26 @@
+import argparse
+import os
 import subprocess
 import tempfile
-import argparse
 
 import numpy as np
-import os
 from stl import Mesh
+
 
 class AutoSlicer:
     # Select slicer parameters based on unprintability > treshold
     treshold_supports = 1.0
     treshold_brim = 2.0
+
+    def __init__(self, slicer_path, config_path):
+        """Initialize AutoSlicer.
+        
+        Keyword arguments:
+        slicer_path -- location of PrusaSlicer. Should be .AppImage or prusa-slicer-console.exe
+        config_path -- location of printer config file
+        """
+        self.slicer = slicer_path
+        self.config = config_path
 
 
     def __tweakFile(self, input_file, tmpdir):
@@ -67,7 +78,9 @@ class AutoSlicer:
             output_path,
             (filename + "_U" + str(unprintability) + "_{print_time}" ".gcode")
             )
-
+        
+        # Form command to run
+        # Example: prusa-slicer-console.exe --load MK3Sconfig.ini -g -o outputFiles/sliced.gcode inputFiles/input.gcode
         cmd = [self.slicer, "--load", self.config]
 
         if float(unprintability) > self.treshold_brim:
@@ -81,6 +94,8 @@ class AutoSlicer:
             subprocess.run(cmd)
         except:
             print("Couldn't slice file " + self.input_file)
+        return 
+
 
     def __cleanName(self, name):
         # Removes/replaces chars to get mostly alphanumeric characters + ().-_
@@ -97,6 +112,12 @@ class AutoSlicer:
 
 
     def slice(self, input, output):
+        """Rotates and slices file in optimal orientation
+
+        Keyword arguments:
+        input -- file to slice (STL or 3MF)
+        output -- path to place output GCODE
+        """
         self.input_file = input
         with tempfile.TemporaryDirectory() as temp_directory:
             print("Temp. dir:", temp_directory)
@@ -141,9 +162,7 @@ if __name__ == "__main__":
         print("Error: printer config file not found at", os.path.abspath(args.printerConfig))
     
 
-    autoslicer = AutoSlicer()
-    autoslicer.config = args.printerConfig
-    autoslicer.slicer = args.slicer
+    autoslicer = AutoSlicer(slicer_path=args.slicer, config_path=args.printerConfig)
     input_file = os.path.abspath(args.inputFile)
     output_path = os.path.abspath(args.output)
     autoslicer.slice(input_file, output_path)
