@@ -16,7 +16,7 @@ class AutoSlicer:
         """Initialize AutoSlicer.
         
         Keyword arguments:
-        slicer_path -- location of PrusaSlicer. Should be .AppImage or prusa-slicer-console.exe
+        slicer_path -- location of PrusaSlicer executable. Should be .AppImage or prusa-slicer-console.exe
         config_path -- location of printer config file
         """
         self.slicer = slicer_path
@@ -166,15 +166,3 @@ if __name__ == "__main__":
     input_file = os.path.abspath(args.inputFile)
     output_path = os.path.abspath(args.output)
     autoslicer.slice(input_file, output_path)
-
-    # WORKFLOW: ...
-    # file -> slice -> save gcode
-    # file -> save to finished folder
-    # file -> remove
-
-    # failed slice:
-    # file -> error folder
-
-    #autoslicer.slicerconfig
-    #autoslicer.slicer
-    # slice(input, outputpath)
