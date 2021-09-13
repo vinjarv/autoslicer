@@ -29,11 +29,13 @@ class AutoSlicer:
         try:
             output_file = os.path.join(tmpdir, "tweaked.stl")
             print(output_file)
+            curr_path = os.path.dirname(os.path.abspath(__file__))
             if os.name == "nt":
-                python_path = os.path.join(os.getcwd(), "venv", "Scripts", "python")
+
+                python_path = os.path.join(curr_path, "venv", "Scripts", "python")
             else:
-                python_path = os.path.join(os.getcwd(), "venv", "bin", "python")
-            tweaker_path = os.path.join(os.getcwd(), "Tweaker-3/Tweaker.py")
+                python_path = os.path.join(curr_path, "venv", "bin", "python")
+            tweaker_path = os.path.join(__file__, "..", "Tweaker-3/Tweaker.py")
             result = subprocess.run([python_path, tweaker_path, "-i", input_file, "-o", output_file, "-x", "-vb"]
                                     , capture_output=True, text=True).stdout
             # Get "unprintability" from stdout
