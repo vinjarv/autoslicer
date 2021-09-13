@@ -35,7 +35,7 @@ class AutoSlicer:
                 python_path = os.path.join(curr_path, "venv", "Scripts", "python")
             else:
                 python_path = os.path.join(curr_path, "venv", "bin", "python")
-            tweaker_path = os.path.join(__file__, "..", "Tweaker-3/Tweaker.py")
+            tweaker_path = os.path.join(curr_path, "Tweaker-3/Tweaker.py")
             result = subprocess.run([python_path, tweaker_path, "-i", input_file, "-o", output_file, "-x", "-vb"]
                                     , capture_output=True, text=True).stdout
             # Get "unprintability" from stdout
